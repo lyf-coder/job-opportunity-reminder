@@ -2,5 +2,5 @@
 爬取招聘网站上的招聘信息，然后推送到飞书等通讯工具
 
 [![GoDoc](https://godoc.org/github.com/lyf-coder/job-opportunity-reminder?status.svg)](https://pkg.go.dev/github.com/lyf-coder/job-opportunity-reminder)
-[![report card](https://img.shields.io/badge/report%20card-a%2B-ff3333.svg?style=flat-square)](http://goreportcard.com/report/lyf-coder/job-opportunity-reminder)
+[![Go Report Card](https://goreportcard.com/badge/github.com/lyf-coder/job-opportunity-reminder)](https://goreportcard.com/report/github.com/lyf-coder/job-opportunity-reminder)
 [![Code Coverage](https://img.shields.io/codecov/c/github/lyf-coder/job-opportunity-reminder/main.svg)](https://codecov.io/github/lyf-coder/job-opportunity-reminder?branch=main)
