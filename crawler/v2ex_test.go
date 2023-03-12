@@ -75,6 +75,7 @@ func Test_crawlPage(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := crawlPage(tt.args.pageNum, tt.args.proxyUrl)
+			t.Log(got)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("crawlPage() error = %v, wantErr %v", err, tt.wantErr)
 				return

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/gocolly/colly/v2"
 	"strconv"
+	"sync"
+	"time"
 )
 
 // V2exCrawler v2ex 爬虫
@@ -56,6 +58,8 @@ func (v2exItem *V2exItem) crawlDetailPage(proxyUrl string) {
 
 // crawlPage 爬取具体的页面
 func crawlPage(pageNum int, proxyUrl string) ([]interface{}, error) {
+	// 保证多个协程完成执行
+	var wg = sync.WaitGroup{}
 	var list []interface{}
 	c := colly.NewCollector()
 
@@ -81,7 +85,13 @@ func crawlPage(pageNum int, proxyUrl string) ([]interface{}, error) {
 				ReplyCount:    count,
 			}
 			list = append(list, v2exItem)
-			v2exItem.crawlDetailPage(proxyUrl)
+			wg.Add(1)
+			go func() {
+				v2exItem.crawlDetailPage(proxyUrl)
+				wg.Done()
+			}()
+			// 防止同一时间的高并发请求导致被禁止访问
+			time.Sleep(100 * time.Millisecond)
 		})
 	})
 	// 设置代理
@@ -93,6 +103,8 @@ func crawlPage(pageNum int, proxyUrl string) ([]interface{}, error) {
 	}
 
 	err := c.Visit(jobUrl + strconv.Itoa(pageNum))
+	// 等待详情信息抓取处理完成
+	wg.Wait()
 	return list, err
 }
 
