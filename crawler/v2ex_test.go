@@ -1,6 +1,7 @@
 package crawler
 
 import (
+	"encoding/json"
 	"os"
 	"reflect"
 	"testing"
@@ -75,7 +76,8 @@ func Test_crawlPage(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := crawlPage(tt.args.pageNum, tt.args.proxyUrl)
-			t.Log(got)
+			out, _ := json.Marshal(got)
+			t.Log(string(out))
 			if (err != nil) != tt.wantErr {
 				t.Errorf("crawlPage() error = %v, wantErr %v", err, tt.wantErr)
 				return

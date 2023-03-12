@@ -91,7 +91,7 @@ func crawlPage(pageNum int, proxyUrl string) ([]interface{}, error) {
 				wg.Done()
 			}()
 			// 防止同一时间的高并发请求导致被禁止访问
-			time.Sleep(100 * time.Millisecond)
+			time.Sleep(200 * time.Millisecond)
 		})
 	})
 	// 设置代理
