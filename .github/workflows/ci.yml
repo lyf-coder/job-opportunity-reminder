@@ -67,13 +67,3 @@ jobs:
           OUT="$(gofmt -l -d ./)"; test -z "$OUT" || (echo "$OUT" && return 1)
           golint -set_exit_status
           go build
-
-  codecov:
-    name: Codecov
-    runs-on: [ubuntu-latest]
-    needs:
-      - test
-      - build
-    steps:
-      - name: Run Codecov
-        run: bash <(curl -s https://codecov.io/bash)
