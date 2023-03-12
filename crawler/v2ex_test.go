@@ -82,6 +82,52 @@ func Test_crawlPage(t *testing.T) {
 			if !reflect.DeepEqual(len(got), tt.want) {
 				t.Errorf("crawlPage() len(got) = %v, want %v", len(got), tt.want)
 			}
+
+		})
+	}
+}
+
+func TestV2exItem_crawlDetailPage(t *testing.T) {
+	type fields struct {
+		Item          Item
+		LastReplyTime string
+		ReplyCount    int
+	}
+	type args struct {
+		proxyUrl string
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		args   args
+	}{
+		{
+			name: "测试详情页面处理",
+			fields: fields{
+				Item: Item{
+					Title:   "",
+					Content: "",
+					Url:     "https://www.v2ex.com/t/921667",
+				},
+				LastReplyTime: "",
+				ReplyCount:    0,
+			},
+			args: args{
+				proxyUrl: os.Getenv("proxyUrl"),
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			v2exItem := &V2exItem{
+				Item:          tt.fields.Item,
+				LastReplyTime: tt.fields.LastReplyTime,
+				ReplyCount:    tt.fields.ReplyCount,
+			}
+			v2exItem.crawlDetailPage(tt.args.proxyUrl)
+			if len(v2exItem.Content) == 0 {
+				t.Errorf("crawlPage() len(v2exItem.Content) = %v, want > 0", len(v2exItem.Content))
+			}
 		})
 	}
 }
