@@ -8,12 +8,6 @@ import (
 	"time"
 )
 
-// V2exCrawler v2ex 爬虫
-var V2exCrawler = &v2exCrawler{
-	// 默认配置-查询 2 个页面
-	PagesNum: 2,
-}
-
 // 爬取的url地址
 const v2exUrl = "https://www.v2ex.com"
 const jobUrl = v2exUrl + "/go/jobs?p="
@@ -27,8 +21,8 @@ type V2exItem struct {
 	ReplyCount int `json:"replyCount,omitempty"`
 }
 
-// v2exCrawler v2ex 爬虫
-type v2exCrawler struct {
+// V2exCrawler v2ex 爬虫
+type V2exCrawler struct {
 	// 查询页数
 	PagesNum int
 	// 代理地址 可选 示例："socks5://127.0.0.1:3128"
@@ -108,7 +102,7 @@ func crawlPage(pageNum int, proxyUrl string) ([]interface{}, error) {
 	return list, err
 }
 
-func (crawler *v2exCrawler) Crawl() []interface{} {
+func (crawler *V2exCrawler) Crawl() []interface{} {
 	var list []interface{}
 	for i := 1; i <= crawler.PagesNum; i++ {
 		pageDataList, err := crawlPage(i, crawler.ProxyUrl)

@@ -1,8 +1,12 @@
 package crawler
 
 import (
+	"io"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -37,7 +41,7 @@ func Test_v2exCrawler_Crawl(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			crawler := &v2exCrawler{
+			crawler := &V2exCrawler{
 				PagesNum: tt.fields.PagesNum,
 				ProxyUrl: tt.fields.ProxyUrl,
 			}
@@ -88,6 +92,46 @@ func Test_crawlPage(t *testing.T) {
 }
 
 func TestV2exItem_crawlDetailPage(t *testing.T) {
+	// 模拟一个返回
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter,
+		r *http.Request) {
+
+		switch strings.TrimSpace(r.URL.Path) {
+		case "/":
+			_, _ = io.WriteString(w, `
+<div id="Main">
+<div class="sep20"></div>
+<div class="box" style="border-bottom: 0px;">
+<div class="header"><div class="fr"><a href="/member/sky123488"><img src="https://cdn.v2ex.com/gravatar/b3dbce35ac6408c1a6faea38663aeba2?s=73&amp;d=retro" class="avatar" border="0" align="default" alt="sky123488"></a></div>
+<a href="/">V2EX</a> <span class="chevron">&nbsp;›&nbsp;</span> <a href="/go/jobs">酷工作</a>
+<div class="sep10"></div>
+<h1>[Talentorg Joblist] 前端工程师/远程/全职</h1>
+<div id="topic_923916_votes" class="votes">
+<a href="javascript:" onclick="upVoteTopic(923916);" class="vote"><li class="fa fa-chevron-up"></li></a> &nbsp;<a href="javascript:" onclick="downVoteTopic(923916);" class="vote"><li class="fa fa-chevron-down"></li></a></div> &nbsp; <small class="gray"><a href="/member/sky123488">sky123488</a> · <span title="2023-03-14 15:12:55 +08:00">55 分钟前</span> · 86 次点击</small>
+</div>
+<div class="cell">
+<div class="topic_content">招聘信息详细内容xxxxx</div>
+</div>
+</div>
+<div class="sep20"></div>
+<div id="no-comments-yet">
+目前尚无回复
+</div>
+<div class="sep20"></div>
+<div class="box">
+<div class="inner"><i class="fa fa-tags fade"></i> <a href="/tag/远程" class="tag">远程</a><a href="/tag/talentorg" class="tag">talentorg</a><a href="/tag/佐玩" class="tag">佐玩</a><a href="/tag/工程师" class="tag">工程师</a></div>
+</div>
+<div class="sep20"></div>
+<div class="sep20"></div>
+<div style="box-sizing: border-box"><div class="wwads-cn wwads-horizontal" data-id="98" style="max-width: 100%; padding-top: 10px; margin-top: 0px; text-align: left; box-shadow: 0 2px 3px rgb(0 0 0 / 10%); border-bottom: 1px solid var(--box-border-color); background-color: var(--box-background-color); color: var(--box-foreground-color);"></div></div>
+<style type="text/css">.wwads-cn { border-radius: 3px !important; } .wwads-text { color: var(--link-color) !important; }</style>
+</div>
+`)
+
+		default:
+			http.NotFoundHandler().ServeHTTP(w, r)
+		}
+	}))
 	type fields struct {
 		Item          Item
 		LastReplyTime string
@@ -107,7 +151,7 @@ func TestV2exItem_crawlDetailPage(t *testing.T) {
 				Item: Item{
 					Title:   "",
 					Content: "",
-					Url:     "https://www.v2ex.com/t/921667",
+					Url:     server.URL,
 				},
 				LastReplyTime: "",
 				ReplyCount:    0,

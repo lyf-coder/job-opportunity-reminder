@@ -1,0 +1,41 @@
+---
+# 定时执行
+name: Cron
+on:
+  push:
+    branches:
+      - '**'
+    pull_request:
+  schedule:
+#    每天晚上 7点半执行一次
+    - cron: '30 19 * * *'
+
+jobs:
+  run:
+    name: run ${{matrix.go}}
+    runs-on: [ubuntu-latest]
+    environment:
+      name: fei_shu_bot_webhook_url  # Settings -> Environments ->
+      # fei_shu_bot_webhook_url: https://github.comxxxx
+    strategy:
+      fail-fast: false
+      matrix:
+        go: [
+          "1.18",
+        ]
+
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v2
+
+      - name: Setup go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{matrix.go}}
+
+      - name: run
+        env:
+          fei_shu_bot_webhook_url: ${{ secrets.fei_shu_bot_webhook_url }}
+        run: |
+          echo $fei_shu_bot_webhook_url
+          go run main.go
