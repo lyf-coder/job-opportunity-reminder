@@ -34,8 +34,8 @@ jobs:
           go-version: ${{matrix.go}}
 
       - name: run
+        env:
+          fei_shu_bot_webhook_url: ${{ secrets.fei_shu_bot_webhook_url }}
         run: |
-          export fei_shu_bot_webhook_url=${{ vars.fei_shu_bot_webhook_url }}
           echo $fei_shu_bot_webhook_url
-          echo ${{ vars }}
           go run main.go
