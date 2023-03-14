@@ -37,7 +37,7 @@ func Test_v2exCrawler_Crawl(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			crawler := &v2exCrawler{
+			crawler := &V2exCrawler{
 				PagesNum: tt.fields.PagesNum,
 				ProxyUrl: tt.fields.ProxyUrl,
 			}
