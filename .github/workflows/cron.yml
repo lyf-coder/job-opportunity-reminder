@@ -35,5 +35,5 @@ jobs:
 
       - name: run
         run: |
-          printenv
+          export fei_shu_bot_webhook_url=${{ vars.fei_shu_bot_webhook_url }}
           go run main.go
