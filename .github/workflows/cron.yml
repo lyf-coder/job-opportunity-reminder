@@ -1,0 +1,35 @@
+---
+# 定时执行
+name: Cron
+on:
+  push:
+    branches:
+      - '**'
+    pull_request:
+  schedule:
+#    每天晚上 7点半执行一次
+    - cron: '30 19 * * *'
+
+jobs:
+  run:
+    name: run ${{matrix.go}}
+    runs-on: [ubuntu-latest]
+    strategy:
+      fail-fast: false
+      matrix:
+        go: [
+          "1.18",
+        ]
+
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v2
+
+      - name: Setup go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{matrix.go}}
+
+      - name: run
+        run: |
+          go run main.go
