@@ -52,9 +52,8 @@ func TestFeiShuReceiver_Receive(t *testing.T) {
 		ReplyCount:    0,
 	})
 	tests := []struct {
-		name    string
-		fields  fields
-		wantErr bool
+		name   string
+		fields fields
 	}{
 		{
 			name: "正常执行测试",
@@ -62,7 +61,6 @@ func TestFeiShuReceiver_Receive(t *testing.T) {
 				Url:  server.URL,
 				Data: data,
 			},
-			wantErr: false,
 		},
 		{
 			name: "服务端返回错误编码测试",
@@ -70,7 +68,6 @@ func TestFeiShuReceiver_Receive(t *testing.T) {
 				Url:  server.URL + "/test",
 				Data: data,
 			},
-			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
@@ -79,9 +76,7 @@ func TestFeiShuReceiver_Receive(t *testing.T) {
 				Url:  tt.fields.Url,
 				Data: tt.fields.Data,
 			}
-			if err := r.Receive(); (err != nil) != tt.wantErr {
-				t.Errorf("Receive() error = %v, wantErr %v", err, tt.wantErr)
-			}
+			r.Receive()
 		})
 	}
 }

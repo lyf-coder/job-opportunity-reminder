@@ -6,6 +6,7 @@ import (
 	"github.com/lyf-coder/job-opportunity-reminder/crawler"
 	"log"
 	"strings"
+	"sync"
 )
 
 // FeiShuReceiver  飞书webhook作为接受者
@@ -14,27 +15,40 @@ type FeiShuReceiver struct {
 	Data []interface{}
 }
 
-func (r *FeiShuReceiver) Receive() error {
-	var contentArr []string
-
+func (r *FeiShuReceiver) Receive() {
+	// 保证多个协程完成执行
+	var wg = sync.WaitGroup{}
 	for _, itemData := range r.Data {
 		item, ok := itemData.(*crawler.V2exItem)
 		if ok {
-			contentArr = append(
-				contentArr, item.Title, "\n\n",
-				item.Content, "\n\n",
-				"原始链接：", item.Url, "\n")
+			wg.Add(1)
+			go func(v2exItem *crawler.V2exItem) {
+				msg := &textMsgBody{
+					MsgType: text,
+					Content: struct {
+						Text string `json:"text"`
+					}{
+						Text: strings.Join([]string{
+							item.Title, "\n\n",
+							item.Content, "\n\n",
+							"原始链接：", item.Url, "\n",
+						}, ""),
+					},
+				}
+				err := r.eachPost(msg)
+				if err != nil {
+					log.Println(msg, err)
+				}
+				wg.Done()
+			}(item)
 		}
 	}
+	wg.Wait()
+}
 
-	respData, err := Post(r.Url, &textMsgBody{
-		MsgType: text,
-		Content: struct {
-			Text string `json:"text"`
-		}{
-			Text: strings.Join(contentArr, ""),
-		},
-	})
+// 单条飞书消息发送
+func (r *FeiShuReceiver) eachPost(msg *textMsgBody) error {
+	respData, err := Post(r.Url, msg)
 	if err != nil {
 		log.Println(`发送飞书消息失败！`)
 		return err

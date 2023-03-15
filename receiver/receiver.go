@@ -11,7 +11,7 @@ import (
 
 // Receiver 接收者
 type Receiver interface {
-	Receive() error
+	Receive()
 }
 
 const JsonContentType = "application/json;charset=utf-8"
