@@ -19,7 +19,7 @@
         "tag": "div",
         "text": {
           "content": "{{.Content}}",
-          "tag": "plain_text"
+          "tag": "lark_md"
         }
       },
       {

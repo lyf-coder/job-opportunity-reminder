@@ -19,6 +19,8 @@ func (r *FeiShuReceiver) Receive() {
 	for i, itemData := range r.Data {
 		item, ok := itemData.(*crawler.V2exItem)
 		item.Num = i + 1
+		b, _ := json.Marshal(item.Content)
+		item.Content = string(b)
 		if ok {
 			msg := tpl.GetTemplateResultStr("job_card_msg.json", tpl.GetTplPath("feishu/job_card_msg.json"), item)
 			err := r.eachPost(msg)
