@@ -18,7 +18,7 @@
       {
         "tag": "div",
         "text": {
-          "content": "{{.Content}}",
+          "content": {{.Content}},
           "tag": "lark_md"
         }
       },
