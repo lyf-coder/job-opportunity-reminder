@@ -5,7 +5,9 @@ import (
 	"errors"
 	"github.com/lyf-coder/job-opportunity-reminder/crawler"
 	"github.com/lyf-coder/job-opportunity-reminder/receiver/tpl"
+	"github.com/lyf-coder/job-opportunity-reminder/util"
 	"log"
+	"time"
 )
 
 // FeiShuReceiver  飞书webhook作为接受者
@@ -16,20 +18,29 @@ type FeiShuReceiver struct {
 
 // Receive 多并发会导致飞书机器人接收失败报错：{"code":9499,"msg":"too many request","data":{}} 所以不用协程
 func (r *FeiShuReceiver) Receive() {
-	for i, itemData := range r.Data {
-		item, ok := itemData.(*crawler.V2exItem)
-		item.Num = i + 1
-		b, _ := json.Marshal(item.Content)
-		// 去掉双引号-带有双引号的消息
-		item.Content = string(b)
-		if ok {
-			msg := tpl.GetTemplateResultStr("job_card_msg.json", tpl.GetTplPath("feishu/job_card_msg.json"), item)
-			err := r.eachPost(msg)
-			if err != nil {
-				log.Println(msg, err)
+	count := 0
+	// 东八的当前时间  -5分钟 小于发布时间即在五分钟之内
+	t := time.Now().In(util.CstZone).Add(-5 * time.Minute)
+	tStr := util.GetTimeFormat(t, util.DATETIME)
+	for _, itemData := range r.Data {
+		if item, ok := itemData.(*crawler.V2exItem); ok {
+			// 处理日期 2023-03-14 17:52:13 +08:00
+			if tStr < item.PublishTime[0:19] {
+				count++
+				item.Num = count
+				// 内容需要处理一下-主要是抓取的数据内容格式不转换会导致消息发送失败
+				b, _ := json.Marshal(item.Content)
+				item.Content = string(b)
+				msg := tpl.GetTemplateResultStr("job_card_msg.json", tpl.GetTplPath("feishu/job_card_msg.json"), item)
+				err := r.eachPost(msg)
+				if err != nil {
+					log.Println(msg, err)
+				}
 			}
+
 		}
 	}
+	log.Println("发送条数：", count)
 }
 
 // 单条飞书消息发送
