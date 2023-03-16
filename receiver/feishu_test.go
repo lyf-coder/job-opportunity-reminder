@@ -3,6 +3,7 @@ package receiver
 import (
 	"encoding/json"
 	"github.com/lyf-coder/job-opportunity-reminder/crawler"
+	"github.com/lyf-coder/job-opportunity-reminder/receiver/tpl"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -17,6 +18,7 @@ func TestFeiShuReceiver_Receive(t *testing.T) {
 
 		switch strings.TrimSpace(r.URL.Path) {
 		case "/":
+			t.Log(r.Body)
 			respBody := &respBody{
 				Code: 0,
 				Msg:  "成功",
@@ -37,6 +39,8 @@ func TestFeiShuReceiver_Receive(t *testing.T) {
 			http.NotFoundHandler().ServeHTTP(w, r)
 		}
 	}))
+	// 由于路径问题-提前加载模版
+	_, _ = tpl.Load("job_card_msg.json", "../tpl/feishu/job_card_msg.json")
 	type fields struct {
 		Url  string
 		Data []interface{}
@@ -44,9 +48,10 @@ func TestFeiShuReceiver_Receive(t *testing.T) {
 	var data []interface{}
 	data = append(data, &crawler.V2exItem{
 		Item: crawler.Item{
-			Title:   "[远程] 招聘 golang 工程师",
-			Content: `具体详细说明xxxxxxxxxx`,
-			Url:     "https://www.v2ex.com/",
+			Title:       "[远程] 招聘 golang 工程师",
+			Content:     `具体详细说明xxxxxxxxxx`,
+			Url:         "https://www.v2ex.com/",
+			PublishTime: "2023-03-13 11:11:11",
 		},
 		LastReplyTime: "2023-03-13 11:11:11",
 		ReplyCount:    0,

@@ -1,0 +1,51 @@
+{
+  "msg_type": "interactive",
+  "card": {
+    "config": {
+      "wide_screen_mode": true
+    },
+    "elements": [
+      {
+        "tag": "div",
+        "text": {
+          "content": "_发布时间：_**{{.PublishTime}}**",
+          "tag": "lark_md"
+        }
+      },
+      {
+        "tag": "hr"
+      },
+      {
+        "tag": "div",
+        "text": {
+          "content": "{{.Content}}",
+          "tag": "lark_md"
+        }
+      },
+      {
+        "tag": "hr"
+      },
+      {
+        "actions": [
+          {
+            "tag": "button",
+            "text": {
+              "content": "原文链接",
+              "tag": "plain_text"
+            },
+            "type": "default",
+            "url": "{{.Url}}"
+          }
+        ],
+        "tag": "action"
+      }
+    ],
+    "header": {
+      "template": "turquoise",
+      "title": {
+        "content": "{{.Title}}",
+        "tag": "plain_text"
+      }
+    }
+  }
+}
