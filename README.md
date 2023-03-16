@@ -5,6 +5,9 @@
 
 爬取招聘网站上的招聘信息，然后推送到飞书等通讯工具
 
+当前爬取的网站：
+* [v2ex 酷工作](https://www.v2ex.com/go/jobs)
+
 ## 使用
 
 1. `fork` 本项目
@@ -15,6 +18,7 @@
 
 备注：假如网络需要代理可设置环境变量： `proxy_url`，格式如：`socks5://127.0.0.1:3128`， `Github action` 执行不需要
 
+## 项目相关文档
 
-
+* [定时抓取招聘信息推送到飞书机器人-v1.0.0](https://www.liyongfei.com/ding-shi-zhua-qu-zhao-pin-xin-xi-tui-song-dao-fei-shu-ji-qi-ren-v1-0-0/)
 
