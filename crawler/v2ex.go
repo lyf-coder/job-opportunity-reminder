@@ -3,6 +3,7 @@ package crawler
 import (
 	"fmt"
 	"github.com/gocolly/colly/v2"
+	"html"
 	"strconv"
 	"sync"
 	"time"
@@ -38,7 +39,8 @@ func (v2exItem *V2exItem) crawlDetailPage(proxyUrl string) {
 	c.OnHTML(`div.topic_content`, func(e *colly.HTMLElement) {
 		// 保留标签信息
 		ret, _ := e.DOM.Html()
-		v2exItem.Content = ret
+		// 转义存储
+		v2exItem.Content = html.EscapeString(ret)
 	})
 	c.OnHTML(`div.header small.gray`, func(e *colly.HTMLElement) {
 		v2exItem.PublishTime = e.ChildAttr(`span`, `title`)
