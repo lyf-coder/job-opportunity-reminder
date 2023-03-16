@@ -16,8 +16,9 @@ type FeiShuReceiver struct {
 
 // Receive 多并发会导致飞书机器人接收失败报错：{"code":9499,"msg":"too many request","data":{}} 所以不用协程
 func (r *FeiShuReceiver) Receive() {
-	for _, itemData := range r.Data {
+	for i, itemData := range r.Data {
 		item, ok := itemData.(*crawler.V2exItem)
+		item.Num = i + 1
 		if ok {
 			msg := tpl.GetTemplateResultStr("job_card_msg.json", tpl.GetTplPath("feishu/job_card_msg.json"), item)
 			err := r.eachPost(msg)

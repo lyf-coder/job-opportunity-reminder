@@ -43,7 +43,7 @@
     "header": {
       "template": "turquoise",
       "title": {
-        "content": "{{.Title}}",
+        "content": "{{.Num}}.  {{.Title}}",
         "tag": "plain_text"
       }
     }

@@ -14,6 +14,8 @@ const jobUrl = v2exUrl + "/go/jobs?p="
 
 // V2exItem v2ex 网站的返回的条目数据结构
 type V2exItem struct {
+	// 序号
+	Num int
 	Item
 	// 最后回复时间
 	LastReplyTime string `json:"lastReplyTime,omitempty"`
@@ -34,7 +36,9 @@ func (v2exItem *V2exItem) crawlDetailPage(proxyUrl string) {
 	c := colly.NewCollector()
 	// 处理页面-class 为 topic_content
 	c.OnHTML(`div.topic_content`, func(e *colly.HTMLElement) {
-		v2exItem.Content = e.Text
+		// 保留标签信息
+		ret, _ := e.DOM.Html()
+		v2exItem.Content = ret
 	})
 	c.OnHTML(`div.header small.gray`, func(e *colly.HTMLElement) {
 		v2exItem.PublishTime = e.ChildAttr(`span`, `title`)
