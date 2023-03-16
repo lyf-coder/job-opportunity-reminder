@@ -58,7 +58,37 @@ Linus Torvalds Quote: "Talk is cheap. Show me the code."
 - 英语读写熟练，愿意练习英语听说能力
 `,
 			Url:         "https://www.v2ex.com/",
-			PublishTime: "2023-03-13 11:11:11",
+			PublishTime: "2023-03-13 11:11:11 +08:00",
+		},
+		LastReplyTime: "2023-03-13 11:11:11",
+		ReplyCount:    0,
+	})
+	data = append(data, &crawler.V2exItem{
+		Item: crawler.Item{
+			Title:       "[远程] 招聘 golang 工程师",
+			Content:     `test`,
+			Url:         "https://www.v2ex.com/",
+			PublishTime: "2023-03-16 14:23:11 +08:00",
+		},
+		LastReplyTime: "2023-03-13 11:11:11",
+		ReplyCount:    0,
+	})
+	data = append(data, &crawler.V2exItem{
+		Item: crawler.Item{
+			Title:       "[远程] 招聘 golang 工程师",
+			Content:     `test`,
+			Url:         "https://www.v2ex.com/",
+			PublishTime: "2023-03-16 14:30:11",
+		},
+		LastReplyTime: "2023-03-13 11:11:11 +08:00",
+		ReplyCount:    0,
+	})
+	data = append(data, &crawler.V2exItem{
+		Item: crawler.Item{
+			Title:       "[远程] 招聘 golang 工程师",
+			Content:     `test`,
+			Url:         "https://www.v2ex.com/",
+			PublishTime: "2023-03-16 14:12:11 +08:00",
 		},
 		LastReplyTime: "2023-03-13 11:11:11",
 		ReplyCount:    0,
