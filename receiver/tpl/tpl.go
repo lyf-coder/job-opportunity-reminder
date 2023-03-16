@@ -30,7 +30,7 @@ func Get(name string, filePath string) (*template.Template, error) {
 }
 
 // GetTemplateResultStr 处理模版-name是文件名
-func GetTemplateResultStr(name string, filePath string, data any) string {
+func GetTemplateResultStr(name string, filePath string, data interface{}) string {
 	replyTemplate, err := Get(name, filePath)
 	if err != nil {
 		log.Println("模版获取失败！", err)

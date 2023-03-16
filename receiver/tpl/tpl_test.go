@@ -19,7 +19,7 @@ func TestGetTplPath(t *testing.T) {
 			args: args{
 				"test.json",
 			},
-			want: "receiver/tpl/test.json",
+			want: "tpl/test.json",
 		},
 	}
 	for _, tt := range tests {
