@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/lyf-coder/job-opportunity-reminder/crawler"
+	"github.com/lyf-coder/job-opportunity-reminder/receiver/tpl"
 	"log"
-	"strings"
 )
 
 // FeiShuReceiver  飞书webhook作为接受者
@@ -14,27 +14,27 @@ type FeiShuReceiver struct {
 	Data []interface{}
 }
 
-func (r *FeiShuReceiver) Receive() error {
-	var contentArr []string
-
-	for _, itemData := range r.Data {
+// Receive 多并发会导致飞书机器人接收失败报错：{"code":9499,"msg":"too many request","data":{}} 所以不用协程
+func (r *FeiShuReceiver) Receive() {
+	for i, itemData := range r.Data {
 		item, ok := itemData.(*crawler.V2exItem)
+		item.Num = i + 1
+		b, _ := json.Marshal(item.Content)
+		// 去掉双引号-带有双引号的消息
+		item.Content = string(b)
 		if ok {
-			contentArr = append(
-				contentArr, item.Title, "\n\n",
-				item.Content, "\n\n",
-				"原始链接：", item.Url, "\n")
+			msg := tpl.GetTemplateResultStr("job_card_msg.json", tpl.GetTplPath("feishu/job_card_msg.json"), item)
+			err := r.eachPost(msg)
+			if err != nil {
+				log.Println(msg, err)
+			}
 		}
 	}
+}
 
-	respData, err := Post(r.Url, &textMsgBody{
-		MsgType: text,
-		Content: struct {
-			Text string `json:"text"`
-		}{
-			Text: strings.Join(contentArr, ""),
-		},
-	})
+// 单条飞书消息发送
+func (r *FeiShuReceiver) eachPost(msg interface{}) error {
+	respData, err := Post(r.Url, msg)
 	if err != nil {
 		log.Println(`发送飞书消息失败！`)
 		return err
@@ -56,24 +56,6 @@ func (r *FeiShuReceiver) Receive() error {
 // 参考 https://open.feishu.cn/document/uAjLw4CM/ukTMukTMukTM/im-v1/message/events/message_content#c9e08671
 // https://open.feishu.cn/document/ukTMukTMukTM/ucTM5YjL3ETO24yNxkjN
 // https://open.feishu.cn/document/uAjLw4CM/ukTMukTMukTM/im-v1/message/create_json#45e0953e
-type MsgType string
-
-const (
-	// text 文本消息类型
-	text MsgType = "text"
-	// post 富文本
-	post MsgType = "post"
-	// 消息卡片
-	interactive MsgType = "interactive"
-)
-
-// 文本消息结构
-type textMsgBody struct {
-	MsgType MsgType `json:"msg_type"`
-	Content struct {
-		Text string `json:"text"`
-	} `json:"content"`
-}
 
 // 发送给飞书的请求响应体
 type respBody struct {

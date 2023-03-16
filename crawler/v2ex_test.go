@@ -172,6 +172,9 @@ func TestV2exItem_crawlDetailPage(t *testing.T) {
 			if len(v2exItem.Content) == 0 {
 				t.Errorf("crawlPage() len(v2exItem.Content) = %v, want > 0", len(v2exItem.Content))
 			}
+			if v2exItem.PublishTime != "2023-03-14 15:12:55 +08:00" {
+				t.Errorf("crawlPage() v2exItem.PublishTime = %v, want 2023-03-14 15:12:55 +08:00", v2exItem.PublishTime)
+			}
 		})
 	}
 }

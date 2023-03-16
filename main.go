@@ -28,10 +28,7 @@ func main() {
 		},
 	}
 	for _, r := range receivers {
-		err := r.Receive()
-		if err != nil {
-			log.Println(err)
-		}
+		r.Receive()
 	}
 
 	log.Println("执行完成")
