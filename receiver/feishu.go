@@ -22,12 +22,12 @@ func (r *FeiShuReceiver) Receive() {
 	// 东八的当前时间  -5分钟 小于发布时间即在五分钟之内
 	t := time.Now().In(util.CstZone).Add(-5 * time.Minute)
 	tStr := util.GetTimeFormat(t, util.DATETIME)
-	for i, itemData := range r.Data {
+	for _, itemData := range r.Data {
 		if item, ok := itemData.(*crawler.V2exItem); ok {
 			// 处理日期 2023-03-14 17:52:13 +08:00
 			if tStr < item.PublishTime[0:19] {
 				count++
-				item.Num = i + 1
+				item.Num = count
 				// 内容需要处理一下-主要是抓取的数据内容格式不转换会导致消息发送失败
 				b, _ := json.Marshal(item.Content)
 				item.Content = string(b)
