@@ -20,32 +20,21 @@ type FeiShuReceiver struct {
 func (r *FeiShuReceiver) Receive() {
 	count := 0
 	// 东八的当前时间  -5分钟 小于发布时间即在五分钟之内
-	log.Println("current time ", time.Now())
-	log.Println("current time CstZone ", time.Now().In(util.CstZone))
-	c := time.Now().In(util.CstZone).Add(-5 * time.Minute)
-	log.Println("current time CstZone 5 m before  ", c)
+	t := time.Now().In(util.CstZone).Add(-5 * time.Minute)
+	tStr := util.GetTimeFormat(t, util.DATETIME)
 	for i, itemData := range r.Data {
 		if item, ok := itemData.(*crawler.V2exItem); ok {
 			// 处理日期 2023-03-14 17:52:13 +08:00
-			if len(item.PublishTime) >= 19 {
-				t, err := util.GetTime(item.PublishTime[0:19], util.DATETIME)
+			if tStr < item.PublishTime[0:19] {
+				count++
+				item.Num = i + 1
+				// 内容需要处理一下-主要是抓取的数据内容格式不转换会导致消息发送失败
+				b, _ := json.Marshal(item.Content)
+				item.Content = string(b)
+				msg := tpl.GetTemplateResultStr("job_card_msg.json", tpl.GetTplPath("feishu/job_card_msg.json"), item)
+				err := r.eachPost(msg)
 				if err != nil {
-					log.Println("发布日期格式处理错误！", err)
-				}
-				t = t.In(util.CstZone)
-				// 五分钟内
-				log.Println(i, c, t)
-				if c.Before(t) {
-					count++
-					item.Num = i + 1
-					// 内容需要处理一下-主要是抓取的数据内容格式不转换会导致消息发送失败
-					b, _ := json.Marshal(item.Content)
-					item.Content = string(b)
-					msg := tpl.GetTemplateResultStr("job_card_msg.json", tpl.GetTplPath("feishu/job_card_msg.json"), item)
-					err := r.eachPost(msg)
-					if err != nil {
-						log.Println(msg, err)
-					}
+					log.Println(msg, err)
 				}
 			}
 
