@@ -6,7 +6,6 @@ import (
 	"github.com/lyf-coder/job-opportunity-reminder/crawler"
 	"github.com/lyf-coder/job-opportunity-reminder/receiver/tpl"
 	"log"
-	"strings"
 )
 
 // FeiShuReceiver  飞书webhook作为接受者
@@ -22,7 +21,7 @@ func (r *FeiShuReceiver) Receive() {
 		item.Num = i + 1
 		b, _ := json.Marshal(item.Content)
 		// 去掉双引号-带有双引号的消息
-		item.Content = strings.ReplaceAll(string(b), "&#34;", "")
+		item.Content = string(b)
 		if ok {
 			msg := tpl.GetTemplateResultStr("job_card_msg.json", tpl.GetTplPath("feishu/job_card_msg.json"), item)
 			err := r.eachPost(msg)
