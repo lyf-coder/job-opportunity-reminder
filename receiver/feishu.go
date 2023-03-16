@@ -20,7 +20,10 @@ type FeiShuReceiver struct {
 func (r *FeiShuReceiver) Receive() {
 	count := 0
 	// 东八的当前时间  -5分钟 小于发布时间即在五分钟之内
+	log.Println("current time ", time.Now())
+	log.Println("current time CstZone ", time.Now().In(util.CstZone))
 	c := time.Now().In(util.CstZone).Add(-5 * time.Minute)
+	log.Println("current time CstZone 5 m before  ", c)
 	for i, itemData := range r.Data {
 		if item, ok := itemData.(*crawler.V2exItem); ok {
 			// 处理日期 2023-03-14 17:52:13 +08:00
@@ -29,8 +32,9 @@ func (r *FeiShuReceiver) Receive() {
 				if err != nil {
 					log.Println("发布日期格式处理错误！", err)
 				}
+				t = t.In(util.CstZone)
 				// 五分钟内
-				log.Println(i, util.GetTimeFormat(c, util.DATETIME), util.GetTimeFormat(t, util.DATETIME))
+				log.Println(i, c, t)
 				if c.Before(t) {
 					count++
 					item.Num = i + 1
