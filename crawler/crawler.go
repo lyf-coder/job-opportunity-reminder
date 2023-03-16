@@ -8,6 +8,8 @@ type Item struct {
 	Content string `json:"content"`
 	// 详细链接
 	Url string `json:"url,omitempty"`
+	// 发布时间
+	PublishTime string `json:"publishTime"`
 }
 
 // Crawler 爬虫

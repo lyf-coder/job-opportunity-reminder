@@ -36,6 +36,9 @@ func (v2exItem *V2exItem) crawlDetailPage(proxyUrl string) {
 	c.OnHTML(`div.topic_content`, func(e *colly.HTMLElement) {
 		v2exItem.Content = e.Text
 	})
+	c.OnHTML(`div.header small.gray`, func(e *colly.HTMLElement) {
+		v2exItem.PublishTime = e.ChildAttr(`span`, `title`)
+	})
 	// 设置代理
 	if len(proxyUrl) > 0 {
 		err := c.SetProxy(proxyUrl)
