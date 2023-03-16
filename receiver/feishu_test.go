@@ -54,6 +54,7 @@ func TestFeiShuReceiver_Receive(t *testing.T) {
 - 熟练掌握 golang 编程语言，代码功底扎实（支持 C++转）
 - 熟练掌握后端架构中各种常见组件，框架，工具的特点，并能灵活组合应用，合理取舍来实现开发目标
 - 熟悉敏捷开发，逻辑清晰，沟通能力强，注重团队合作；自我管理能力 /责任心强
+Linus Torvalds Quote: "Talk is cheap. Show me the code."
 - 英语读写熟练，愿意练习英语听说能力
 `,
 			Url:         "https://www.v2ex.com/",
