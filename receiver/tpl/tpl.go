@@ -2,8 +2,8 @@ package tpl
 
 import (
 	"bytes"
+	"html/template"
 	"log"
-	"text/template"
 )
 
 // 缓存模版
