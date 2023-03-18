@@ -1,6 +1,8 @@
 package util
 
-import "time"
+import (
+	"time"
+)
 
 type FORMAT string
 
@@ -26,4 +28,11 @@ func GetTimeFormat(handleTime time.Time, format FORMAT) string {
 // GetTime 获取字符串对应的时间
 func GetTime(timeStr string, timeFormat FORMAT) (time.Time, error) {
 	return time.ParseInLocation(string(timeFormat), timeStr, time.Local)
+}
+
+// TimeStrInDuration 判断时间字符串在 东八的当前时间 Duration 范围内 如 五分钟内的时间 5 * time.Minute
+func TimeStrInDuration(d time.Duration, timeStr string, format FORMAT) bool {
+	t := time.Now().In(CstZone).Add(-d)
+	tStr := GetTimeFormat(t, format)
+	return tStr < timeStr
 }
