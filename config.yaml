@@ -1,0 +1,6 @@
+# 代理url
+proxy_url: ''
+#  过滤的时间范围-单位秒-配置此值代表只发送在当前时间内此时间段的新发布数据，比如 300 代表5分钟内的数据
+duration_sec: 300
+# 飞书机器人 webhook 地址
+fei_shu_bot_webhook_url: ''
