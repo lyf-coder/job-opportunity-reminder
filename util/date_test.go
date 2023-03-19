@@ -50,7 +50,7 @@ func TestTimeStrInDuration(t *testing.T) {
 			name: "五分钟内",
 			args: args{
 				d:       5 * time.Minute,
-				timeStr: GetTimeFormat(time.Now().Add(-3*time.Minute), DATETIME),
+				timeStr: GetTimeFormat(time.Now().In(CstZone).Add(-3*time.Minute), DATETIME),
 				format:  DATETIME,
 			},
 			want: true,
@@ -59,7 +59,7 @@ func TestTimeStrInDuration(t *testing.T) {
 			name: "超过五分钟",
 			args: args{
 				d:       5 * time.Minute,
-				timeStr: GetTimeFormat(time.Now().Add(-6*time.Minute), DATETIME),
+				timeStr: GetTimeFormat(time.Now().In(CstZone).Add(-6*time.Minute), DATETIME),
 				format:  DATETIME,
 			},
 			want: false,
