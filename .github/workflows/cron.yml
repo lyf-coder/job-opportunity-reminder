@@ -38,7 +38,7 @@ jobs:
       - name: run
         env:
           FEI_SHU_BOT_WEBHOOK_URL: ${{ secrets.fei_shu_bot_webhook_url }}
-          DURATION_SEC: ${{ github.env.DURATION_SEC }}
+          DURATION_SEC: ${{ vars.DURATION_SEC }}
         run: |
           echo $DURATION_SEC
           go run main.go
