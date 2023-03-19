@@ -1,6 +1,8 @@
 package crawler
 
 import (
+	"github.com/lyf-coder/job-opportunity-reminder/config"
+	"github.com/spf13/viper"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -11,6 +13,9 @@ import (
 )
 
 func Test_v2exCrawler_Crawl(t *testing.T) {
+	config.LoadConfig("../")
+	// 不过滤
+	os.Setenv("DURATION_SEC", "0")
 	type fields struct {
 		PagesNum int
 		ProxyUrl string
@@ -25,8 +30,8 @@ func Test_v2exCrawler_Crawl(t *testing.T) {
 			name: "测试获取2个页面的招聘信息",
 			fields: fields{
 				PagesNum: 2,
-				// 为了让本地可以执行测试-github上不需要代理。为了让代码方便使用，这里使用环境变量，本地临时在环境变量里设置一下代理地址以便测试用例通过
-				ProxyUrl: os.Getenv("proxyUrl"),
+				// 为了让本地可以执行测试-github上不需要代理
+				ProxyUrl: viper.GetString("proxy_url"),
 			},
 			want: 40,
 		},
@@ -34,7 +39,7 @@ func Test_v2exCrawler_Crawl(t *testing.T) {
 			name: "测试获取3个页面的招聘信息",
 			fields: fields{
 				PagesNum: 3,
-				ProxyUrl: os.Getenv("proxyUrl"),
+				ProxyUrl: viper.GetString("proxy_url"),
 			},
 			want: 60,
 		},
@@ -48,45 +53,6 @@ func Test_v2exCrawler_Crawl(t *testing.T) {
 			if got := crawler.Crawl(); !reflect.DeepEqual(len(got), tt.want) {
 				t.Errorf("Crawl() = %v, want %v", len(got), tt.want)
 			}
-		})
-	}
-}
-
-func Test_crawlPage(t *testing.T) {
-	type args struct {
-		pageNum  int
-		proxyUrl string
-	}
-
-	tests := []struct {
-		name    string
-		args    args
-		want    int
-		wantErr bool
-	}{
-		// 本地执行测试-如果不能访问外网，需要设置代理，不然网络可能不通
-		{
-			name: "测试爬取第1页",
-			args: args{
-				pageNum: 1,
-				// 为了让本地可以执行测试-github上不需要代理。为了让代码方便使用，这里使用环境变量，本地临时在环境变量里设置一下代理地址以便测试用例通过
-				proxyUrl: os.Getenv("proxyUrl"),
-			},
-			want:    20, // 期望结果数量
-			wantErr: false,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := crawlPage(tt.args.pageNum, tt.args.proxyUrl)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("crawlPage() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(len(got), tt.want) {
-				t.Errorf("crawlPage() len(got) = %v, want %v", len(got), tt.want)
-			}
-
 		})
 	}
 }
@@ -174,6 +140,61 @@ func TestV2exItem_crawlDetailPage(t *testing.T) {
 			}
 			if v2exItem.PublishTime != "2023-03-14 15:12:55 +08:00" {
 				t.Errorf("crawlPage() v2exItem.PublishTime = %v, want 2023-03-14 15:12:55 +08:00", v2exItem.PublishTime)
+			}
+		})
+	}
+}
+
+func TestV2exCrawler_crawlPage(t *testing.T) {
+	config.LoadConfig("../")
+	// 不过滤
+	os.Setenv("DURATION_SEC", "0")
+	type fields struct {
+		crawler  crawler
+		PagesNum int
+		ProxyUrl string
+	}
+	type args struct {
+		pageNum int
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    int
+		wantErr bool
+	}{
+		// 本地执行测试-如果不能访问外网，需要设置代理，不然网络可能不通
+		{
+			name: "测试爬取第1页",
+			fields: fields{
+				crawler:  crawler{},
+				PagesNum: 1,
+				// 为了让本地可以执行测试-github上不需要代理
+				ProxyUrl: viper.GetString("proxy_url"),
+			},
+			args: args{
+				pageNum: 1,
+			},
+			want:    20, // 期望结果数量
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			crawler := &V2exCrawler{
+				crawler:  tt.fields.crawler,
+				PagesNum: tt.fields.PagesNum,
+				ProxyUrl: tt.fields.ProxyUrl,
+			}
+			t.Log("proxyUrl", tt.fields.ProxyUrl)
+			got, err := crawler.crawlPage(tt.args.pageNum)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("crawlPage() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(len(got), tt.want) {
+				t.Errorf("crawlPage() len(got) = %v, want %v", len(got), tt.want)
 			}
 		})
 	}
