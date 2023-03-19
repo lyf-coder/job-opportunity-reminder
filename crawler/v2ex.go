@@ -3,6 +3,7 @@ package crawler
 import (
 	"fmt"
 	"github.com/gocolly/colly/v2"
+	"log"
 	"strconv"
 	"sync"
 	"time"
@@ -14,8 +15,6 @@ const jobUrl = v2exUrl + "/go/jobs?p="
 
 // V2exItem v2ex 网站的返回的条目数据结构
 type V2exItem struct {
-	// 序号
-	Num int
 	Item
 	// 最后回复时间
 	LastReplyTime string `json:"lastReplyTime,omitempty"`
@@ -25,6 +24,7 @@ type V2exItem struct {
 
 // V2exCrawler v2ex 爬虫
 type V2exCrawler struct {
+	crawler
 	// 查询页数
 	PagesNum int
 	// 代理地址 可选 示例："socks5://127.0.0.1:3128"
@@ -57,7 +57,7 @@ func (v2exItem *V2exItem) crawlDetailPage(proxyUrl string) {
 }
 
 // crawlPage 爬取具体的页面
-func crawlPage(pageNum int, proxyUrl string) ([]interface{}, error) {
+func (crawler *V2exCrawler) crawlPage(pageNum int) ([]interface{}, error) {
 	// 保证多个协程完成执行
 	var wg = sync.WaitGroup{}
 	var list []interface{}
@@ -87,7 +87,7 @@ func crawlPage(pageNum int, proxyUrl string) ([]interface{}, error) {
 			list = append(list, v2exItem)
 			wg.Add(1)
 			go func() {
-				v2exItem.crawlDetailPage(proxyUrl)
+				v2exItem.crawlDetailPage(crawler.ProxyUrl)
 				wg.Done()
 			}()
 			// 防止同一时间的高并发请求导致被禁止访问
@@ -95,23 +95,26 @@ func crawlPage(pageNum int, proxyUrl string) ([]interface{}, error) {
 		})
 	})
 	// 设置代理
-	if len(proxyUrl) > 0 {
-		err := c.SetProxy(proxyUrl)
+	if len(crawler.ProxyUrl) > 0 {
+		err := c.SetProxy(crawler.ProxyUrl)
 		if err != nil {
 			return nil, err
 		}
 	}
 
 	err := c.Visit(jobUrl + strconv.Itoa(pageNum))
+	if err != nil {
+		log.Println("error", "访问页面失败！", err)
+	}
 	// 等待详情信息抓取处理完成
 	wg.Wait()
-	return list, err
+	return crawler.filterByDurationSec(list), err
 }
 
 func (crawler *V2exCrawler) Crawl() []interface{} {
 	var list []interface{}
 	for i := 1; i <= crawler.PagesNum; i++ {
-		pageDataList, err := crawlPage(i, crawler.ProxyUrl)
+		pageDataList, err := crawler.crawlPage(i)
 		if err != nil {
 			fmt.Println("爬取页面失败", i, err)
 			continue
