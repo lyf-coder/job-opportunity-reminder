@@ -11,6 +11,8 @@ import (
 func main() {
 	// 加载配置
 	config.LoadConfig("./")
+	log.Println(viper.Get("proxy_url"))
+	log.Println(viper.Get("duration_sec"))
 	var list []interface{}
 	// 爬虫数组
 	crawlers := []crawler.Crawler{
