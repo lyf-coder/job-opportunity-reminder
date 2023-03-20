@@ -35,6 +35,7 @@ func (item *EleDuckItem) crawlDetailPage() {
 	}
 	item.Title = postData.Post.Title
 	item.Content = postData.Post.RawContent
+	item.Flag = eleDuck
 }
 
 func (eleCrawler *EleDuckCrawler) Crawl() []interface{} {
@@ -68,6 +69,7 @@ func (eleCrawler *EleDuckCrawler) Crawl() []interface{} {
 	if err != nil {
 		log.Println(err)
 	}
+	log.Println("eleduck", len(list))
 	return list
 }
 

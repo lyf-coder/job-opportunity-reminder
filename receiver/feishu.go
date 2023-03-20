@@ -20,7 +20,9 @@ func (r *FeiShuReceiver) Receive() {
 	count := 0
 
 	for _, itemData := range r.Data {
-		if item, ok := itemData.(*crawler.Item); ok {
+
+		if iItem, ok := itemData.(crawler.IItem); ok {
+			item := iItem.Get()
 			count++
 			item.Num = count
 			// 内容需要处理一下-主要是抓取的数据内容格式不转换会导致消息发送失败

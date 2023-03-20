@@ -18,7 +18,7 @@ func LoadConfig(filePath string) {
 	// 设置文件名
 	viper.SetConfigName("config") // name of config file (without extension)
 	// 设置配置文件的类型
-	viper.SetConfigType("json") // REQUIRED if the config file does not have the extension in the name
+	viper.SetConfigType("yaml") // REQUIRED if the config file does not have the extension in the name
 
 	// 设置配置文件路径为当前工作目录
 	viper.AddConfigPath(filePath) // optionally look for config in the working directory
