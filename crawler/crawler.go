@@ -22,6 +22,24 @@ type Item struct {
 	PublishTime string `json:"publishTime"`
 	// 序号
 	Num int
+	// 标识
+	Flag Flag
+}
+
+// Flag 平台标识
+type Flag string
+
+const (
+	v2ex    Flag = "v2ex"
+	eleDuck Flag = "eleDuck"
+)
+
+type IItem interface {
+	Get() *Item
+}
+
+func (item *Item) Get() *Item {
+	return item
 }
 
 // Crawler 爬虫
@@ -36,15 +54,15 @@ type crawler struct {
 // 根据时间范围进行过滤
 func (c *crawler) filterByDurationSec(list []interface{}) []interface{} {
 	// 假如 duration_sec 为 0 则不进行过滤
-	durationSec := viper.GetInt("duration_sec")
-	if durationSec != 0 {
+	duration := viper.GetDuration("duration_sec")
+	if duration != 0 {
 		// 过滤符合时间范围内的数据
-		t := time.Now().In(util.CstZone).Add(-time.Duration(durationSec))
+		t := time.Now().In(util.CstZone).Add(-duration * time.Second)
 		tStr := util.GetTimeFormat(t, util.DATETIME)
 		var filteredList []interface{}
 		for _, listItem := range list {
-			if item, ok := listItem.(Item); ok && tStr < item.PublishTime[0:19] {
-				filteredList = append(filteredList, item)
+			if iItem, ok := listItem.(IItem); ok && tStr < iItem.Get().PublishTime[0:19] {
+				filteredList = append(filteredList, listItem)
 			}
 		}
 		return filteredList
@@ -54,9 +72,9 @@ func (c *crawler) filterByDurationSec(list []interface{}) []interface{} {
 
 // 在目标时间范围内
 func (c *crawler) isInDurationSec(item *Item) bool {
-	durationSec := viper.GetInt("duration_sec")
-	if durationSec != 0 {
-		return util.TimeStrInDuration(time.Duration(durationSec), item.PublishTime, util.DATETIME)
+	duration := viper.GetDuration("duration_sec")
+	if duration != 0 {
+		return util.TimeStrInDuration(duration*time.Second, item.PublishTime, util.DATETIME)
 	}
 	return true
 }

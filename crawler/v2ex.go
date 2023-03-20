@@ -80,6 +80,7 @@ func (crawler *V2exCrawler) crawlPage(pageNum int) ([]interface{}, error) {
 				Item: Item{
 					Title: eTable.ChildText(`a.topic-link`),
 					Url:   v2exUrl + eTable.ChildAttr(`a.topic-link`, "href"),
+					Flag:  v2ex,
 				},
 				LastReplyTime: eTable.ChildAttr(`span`, "title"),
 				ReplyCount:    count,
@@ -108,6 +109,7 @@ func (crawler *V2exCrawler) crawlPage(pageNum int) ([]interface{}, error) {
 	}
 	// 等待详情信息抓取处理完成
 	wg.Wait()
+	log.Println("v2ex未过滤的数量", len(list))
 	return crawler.filterByDurationSec(list), err
 }
 
@@ -121,5 +123,6 @@ func (crawler *V2exCrawler) Crawl() []interface{} {
 		}
 		list = append(list, pageDataList...)
 	}
+	log.Println("v2ex", len(list))
 	return list
 }
