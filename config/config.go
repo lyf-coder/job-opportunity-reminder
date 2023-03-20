@@ -24,7 +24,6 @@ func LoadConfig(filePath string) {
 	viper.AddConfigPath(filePath) // optionally look for config in the working directory
 
 	log.Println("加载环境变量...")
-	log.Println(viper.AllSettings())
 	// 环境变量需要大写
 	viper.AutomaticEnv()
 
