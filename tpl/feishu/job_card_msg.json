@@ -8,7 +8,7 @@
       {
         "tag": "div",
         "text": {
-          "content": "_发布时间：_**{{.PublishTime}}**",
+          "content": "_发布时间：_**{{.PublishTime}}**   _来源：_**{{.Flag}}**",
           "tag": "lark_md"
         }
       },
